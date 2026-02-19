@@ -1,0 +1,87 @@
+from enum import Enum
+
+class TipoPlaneta(Enum):
+    GASEOSO = "Gaseoso"
+    TERRESTRE = "Terrestre"
+    ENANO = "Enano"
+
+
+class Planeta:
+
+    def __init__(self, nombre="null", cantidad_satelites=0, masa=0.0, volumen=0.0,
+                 diametro=0, distancia_sol=0, tipo=TipoPlaneta.TERRESTRE,
+                 es_observable=False, periodo_orbital=0.0, periodo_rotacion=0.0):
+        self.nombre = nombre
+        self.cantidad_satelites = cantidad_satelites
+        self.masa = masa
+        self.volumen = volumen
+        self.diametro = diametro
+        self.distancia_sol = distancia_sol
+        self.tipo = tipo
+        self.es_observable = es_observable
+        self.periodo_orbital = periodo_orbital
+        self.periodo_rotacion = periodo_rotacion
+
+    def imprimir(self):
+        print(f"\n--- Información del planeta {self.nombre} ---")
+        print(f"Cantidad de satélites: {self.cantidad_satelites}")
+        print(f"Masa: {self.masa} kg")
+        print(f"Volumen: {self.volumen} km³")
+        print(f"Diámetro: {self.diametro} km")
+        print(f"Distancia al Sol: {self.distancia_sol} km")
+        print(f"Tipo: {self.tipo.value}")
+        print(f"Observable a simple vista: {self.es_observable}")
+        print(f"Periodo orbital: {self.periodo_orbital} años")
+        print(f"Periodo de rotación: {self.periodo_rotacion} días")
+
+    def calcular_densidad(self):
+        if self.volumen > 0:
+            return self.masa / self.volumen
+        return 0
+
+    def es_planeta_exterior(self):
+        UA = 149_597_870 
+        limite = 3.4 * UA
+        return self.distancia_sol > limite
+
+def crear_planeta():
+    nombre = input("Ingrese el nombre del planeta: ")
+    cantidad_satelites = int(input("Ingrese la cantidad de satélites: "))
+    masa = float(input("Ingrese la masa del planeta (kg): "))
+    volumen = float(input("Ingrese el volumen del planeta (km³): "))
+    diametro = int(input("Ingrese el diámetro del planeta (km): "))
+    distancia_sol = int(input("Ingrese la distancia media al Sol (km): "))
+
+    print("\nSeleccione el tipo de planeta:")
+    print("1. Gaseoso")
+    print("2. Terrestre")
+    print("3. Enano")
+    opcion = int(input("Ingrese opción (1-3): "))
+    if opcion == 1:
+        tipo = TipoPlaneta.GASEOSO
+    elif opcion == 2:
+        tipo = TipoPlaneta.TERRESTRE
+    else:
+        tipo = TipoPlaneta.ENANO
+
+    es_observable = input("¿Es observable a simple vista? (s/n): ").lower() == "s"
+    periodo_orbital = float(input("Ingrese el periodo orbital (años): "))
+    periodo_rotacion = float(input("Ingrese el periodo de rotación (días): "))
+
+    return Planeta(nombre, cantidad_satelites, masa, volumen, diametro,
+                   distancia_sol, tipo, es_observable,
+                   periodo_orbital, periodo_rotacion)
+
+if __name__ == "__main__":
+    print("=== Registro de Planetas ===")
+    p1 = crear_planeta()
+    p2 = crear_planeta()
+
+    p1.imprimir()
+    print(f"Densidad = {p1.calcular_densidad()} kg/km³")
+    print(f"¿Es planeta exterior? {p1.es_planeta_exterior()}")
+    print()
+
+    p2.imprimir()
+    print(f"Densidad = {p2.calcular_densidad()} kg/km³")
+    print(f"¿Es planeta exterior? {p2.es_planeta_exterior()}")
