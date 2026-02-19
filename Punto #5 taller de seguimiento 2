@@ -1,0 +1,59 @@
+class CuentaBancaria:
+    class TipoCuenta:
+        AHORROS = "Ahorros"
+        CORRIENTE = "Corriente"
+
+    def __init__(self, nombres_titular, apellidos_titular, numero_cuenta, tipo_cuenta, interes=0.01):
+        self.nombres_titular = nombres_titular
+        self.apellidos_titular = apellidos_titular
+        self.numero_cuenta = numero_cuenta
+        self.tipo_cuenta = tipo_cuenta
+        self.saldo = 0.0
+        self.interes = interes
+
+    def imprimir(self):
+        print("Nombres del titular =", self.nombres_titular)
+        print("Apellidos del titular =", self.apellidos_titular)
+        print("Número de cuenta =", self.numero_cuenta)
+        print("Tipo de cuenta =", self.tipo_cuenta)
+        print("Saldo =", self.saldo)
+
+    def consultar_saldo(self):
+        print("El saldo actual es =", self.saldo)
+
+    def consignar(self, valor):
+        if valor > 0:
+            self.saldo += valor
+            print("Se ha consignado $", valor, ". El nuevo saldo es $", self.saldo)
+            return True
+        else:
+            print("El valor a consignar debe ser mayor que cero.")
+            return False
+
+    def retirar(self, valor):
+        if valor > 0 and valor <= self.saldo:
+            self.saldo -= valor
+            print("Se ha retirado $", valor, ". El nuevo saldo es $", self.saldo)
+            return True
+        else:
+            print("El valor a retirar debe ser menor o igual al saldo actual.")
+            return False
+
+    def aplicar_interes(self):
+        self.saldo += self.saldo * self.interes
+        print("Se ha aplicado un interés del", self.interes * 100, "%. El nuevo saldo es $", self.saldo)
+
+
+if __name__ == "__main__":
+    nombres = input("Ingrese los nombres del titular: ")
+    apellidos = input("Ingrese los apellidos del titular: ")
+    numero_cuenta = int(input("Ingrese el número de cuenta: "))
+    tipo = input("Ingrese el tipo de cuenta (Ahorros/Corriente): ")
+
+    cuenta = CuentaBancaria(nombres, apellidos, numero_cuenta, tipo)
+    cuenta.imprimir()
+
+    cuenta.consignar(float(input("Ingrese el valor a consignar: ")))
+    cuenta.retirar(float(input("Ingrese el valor a retirar: ")))
+    cuenta.aplicar_interes()
+    cuenta.consultar_saldo()
