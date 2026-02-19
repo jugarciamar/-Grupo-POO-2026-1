@@ -1,0 +1,40 @@
+class Persona:
+    def __init__(self, nombre, apellidos, numero_documento_identidad, anio_nacimiento, pais_nacimiento, genero):
+        self.nombre = nombre
+        self.apellidos = apellidos
+        self.numero_documento_identidad = numero_documento_identidad
+        self.anio_nacimiento = anio_nacimiento
+        self.pais_nacimiento = pais_nacimiento
+        self.genero = genero 
+
+    def imprimir(self):
+        print(f"Nombre = {self.nombre}")
+        print(f"Apellidos = {self.apellidos}")
+        print(f"Número de documento de identidad = {self.numero_documento_identidad}")
+        print(f"Año de nacimiento = {self.anio_nacimiento}")
+        print(f"País de nacimiento = {self.pais_nacimiento}")
+        print(f"Género = {self.genero}")
+        print()
+
+if __name__ == "__main__":
+    print("Ingrese los datos de la primera persona:")
+    nombre1 = input("Nombre: ")
+    apellidos1 = input("Apellidos: ")
+    documento1 = input("Número de documento de identidad: ")
+    anio1 = int(input("Año de nacimiento: "))
+    pais1 = input("País de nacimiento: ")
+    genero1 = input("Género (H/M): ")
+    p1 = Persona(nombre1, apellidos1, documento1, anio1, pais1, genero1)
+
+    print("\nIngrese los datos de la segunda persona:")
+    nombre2 = input("Nombre: ")
+    apellidos2 = input("Apellidos: ")
+    documento2 = input("Número de documento de identidad: ")
+    anio2 = int(input("Año de nacimiento: "))
+    pais2 = input("País de nacimiento: ")
+    genero2 = input("Género (H/M): ")
+    p2 = Persona(nombre2, apellidos2, documento2, anio2, pais2, genero2)
+
+    print("\n--- Datos de las personas ---\n")
+    p1.imprimir()
+    p2.imprimir()
