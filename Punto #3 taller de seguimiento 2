@@ -1,91 +1,64 @@
+from enum import Enum
+
+class TipoCombustible(Enum):
+    GASOLINA = 1
+    BIOETANOL = 2
+    DIESEL = 3
+    BIODIESEL = 4
+    GAS_NATURAL = 5
+
+class TipoAuto(Enum):
+    CIUDAD = 1
+    SUBCOMPACTO = 2
+    COMPACTO = 3
+    FAMILIAR = 4
+    EJECUTIVO = 5
+    SUV = 6
+
+class TipoColor(Enum):
+    BLANCO = 1
+    NEGRO = 2
+    ROJO = 3
+    NARANJA = 4
+    AMARILLO = 5
+    VERDE = 6
+    AZUL = 7
+    VIOLETA = 8
+
+
 class Automovil:
     def __init__(self, marca, modelo, motor, tipo_combustible, tipo_auto,
                  numero_puertas, cantidad_asientos, velocidad_maxima, color, automatico):
+
         self.marca = marca
         self.modelo = modelo
-        self.motor = motor
-        self.tipo_combustible = tipo_combustible
-        self.tipo_auto = tipo_auto
+        self.motor = int(motor)  
+        self.tipo_combustible = tipo_combustible  
+        self.tipo_auto = tipo_auto                
         self.numero_puertas = numero_puertas
         self.cantidad_asientos = cantidad_asientos
         self.velocidad_maxima = velocidad_maxima
-        self.color = color
+        self.color = color                        
         self.automatico = automatico
         self.velocidad_actual = 0
         self.multas = 0
-
-    def getMarca(self):
-        return self.marca
-
-    def setMarca(self, marca):
-        self.marca = marca
-
-    def getModelo(self):
-        return self.modelo
-
-    def setModelo(self, modelo):
-        self.modelo = modelo
-
-    def getMotor(self):
-        return self.motor
-
-    def setMotor(self, motor):
-        self.motor = motor
-
-    def getTipoCombustible(self):
-        return self.tipo_combustible
-
-    def setTipoCombustible(self, tipo_combustible):
-        self.tipo_combustible = tipo_combustible
-
-    def getTipoAuto(self):
-        return self.tipo_auto
-
-    def setTipoAuto(self, tipo_auto):
-        self.tipo_auto = tipo_auto
-
-    def getNumeroPuertas(self):
-        return self.numero_puertas
-
-    def setNumeroPuertas(self, numero_puertas):
-        self.numero_puertas = numero_puertas
-
-    def getCantidadAsientos(self):
-        return self.cantidad_asientos
-
-    def setCantidadAsientos(self, cantidad_asientos):
-        self.cantidad_asientos = cantidad_asientos
-
-    def getVelocidadMaxima(self):
-        return self.velocidad_maxima
-
-    def setVelocidadMaxima(self, velocidad_maxima):
-        self.velocidad_maxima = velocidad_maxima
-
-    def getColor(self):
-        return self.color
-
-    def setColor(self, color):
-        self.color = color
-
-    def getAutomatico(self):
-        return self.automatico
-
-    def setAutomatico(self, automatico):
-        self.automatico = automatico
 
     def getVelocidadActual(self):
         return self.velocidad_actual
 
     def setVelocidadActual(self, velocidad_actual):
-        self.velocidad_actual = velocidad_actual
+        if 0 <= velocidad_actual <= self.velocidad_maxima:
+            self.velocidad_actual = velocidad_actual
+        else:
+            print("Velocidad inválida.")
 
     def acelerar(self, incremento):
         if self.velocidad_actual + incremento <= self.velocidad_maxima:
             self.velocidad_actual += incremento
         else:
             self.multas += 1
-            print("No se puede superar la velocidad máxima. Se generó una multa.")
+            self.velocidad_actual = self.velocidad_maxima
+            print("Se intentó superar la velocidad máxima. Multa generada.")
 
     def desacelerar(self, decremento):
         if self.velocidad_actual - decremento >= 0:
@@ -97,10 +70,10 @@ class Automovil:
         self.velocidad_actual = 0
 
     def calcularTiempoLlegada(self, distancia):
-        if self.velocidad_actual > 0:
-            return distancia / self.velocidad_actual
-        else:
-            return None
+        if self.velocidad_actual == 0:
+            print("El vehículo está detenido.")
+            return float('inf')
+        return distancia / self.velocidad_actual
 
     def tieneMultas(self):
         return self.multas > 0
@@ -109,43 +82,70 @@ class Automovil:
         return self.multas * 200000
 
     def imprimir(self):
+        print("\n===== DATOS DEL AUTOMÓVIL =====")
         print("Marca:", self.marca)
         print("Modelo:", self.modelo)
         print("Motor:", self.motor)
-        print("Tipo de combustible:", self.tipo_combustible)
-        print("Tipo de automóvil:", self.tipo_auto)
+        print("Tipo de combustible:", self.tipo_combustible.name)
+        print("Tipo de automóvil:", self.tipo_auto.name)
         print("Número de puertas:", self.numero_puertas)
         print("Cantidad de asientos:", self.cantidad_asientos)
         print("Velocidad máxima:", self.velocidad_maxima)
-        print("Color:", self.color)
+        print("Color:", self.color.name)
         print("Automático:", self.automatico)
         print("Velocidad actual:", self.velocidad_actual)
         print("Multas acumuladas:", self.multas)
 
 
+def seleccionar_enum(enum_class):
+    for item in enum_class:
+        print(f"{item.value}. {item.name}")
+    opcion = int(input("Seleccione una opción: "))
+    return enum_class(opcion)
+
 if __name__ == "__main__":
+
     marca = input("Ingrese la marca: ")
     modelo = int(input("Ingrese el modelo (año): "))
-    motor = float(input("Ingrese el cilindraje del motor (litros): "))
-    tipo_combustible = input("Ingrese el tipo de combustible: ")
-    tipo_auto = input("Ingrese el tipo de automóvil: ")
+    motor = int(input("Ingrese el cilindraje del motor (entero): "))
+
+    print("\nSeleccione tipo de combustible:")
+    tipo_combustible = seleccionar_enum(TipoCombustible)
+
+    print("\nSeleccione tipo de automóvil:")
+    tipo_auto = seleccionar_enum(TipoAuto)
+
     numero_puertas = int(input("Ingrese el número de puertas: "))
     cantidad_asientos = int(input("Ingrese la cantidad de asientos: "))
-    velocidad_maxima = int(input("Ingrese la velocidad máxima: "))
-    color = input("Ingrese el color: ")
+    velocidad_maxima = int(input("Ingrese la velocidad máxima del automóvil: "))
+
+    print("\nSeleccione el color:")
+    color = seleccionar_enum(TipoColor)
+
     automatico = input("¿Es automático? (si/no): ").lower() == "si"
 
-    auto = Automovil(marca, modelo, motor, tipo_combustible, tipo_auto,
-                     numero_puertas, cantidad_asientos, velocidad_maxima, color, automatico)
+    auto = Automovil(
+        marca, modelo, motor,
+        tipo_combustible, tipo_auto,
+        numero_puertas, cantidad_asientos,
+        velocidad_maxima, color, automatico
+    )
 
     auto.imprimir()
+
     auto.setVelocidadActual(100)
-    print("Velocidad actual:", auto.getVelocidadActual())
+    print("\nVelocidad actual:", auto.getVelocidadActual())
+
     auto.acelerar(20)
     print("Velocidad actual:", auto.getVelocidadActual())
+
     auto.desacelerar(50)
     print("Velocidad actual:", auto.getVelocidadActual())
+
     auto.frenar()
     print("Velocidad actual:", auto.getVelocidadActual())
+
     auto.desacelerar(20)
-    print("Multas:", auto.tieneMultas(), "Valor:", auto.valorMultas())
+
+    print("\n¿Tiene multas?:", auto.tieneMultas())
+    print("Valor multas:", auto.valorMultas())
