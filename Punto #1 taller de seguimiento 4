@@ -1,0 +1,106 @@
+class PruebaExcepciones:
+
+    @staticmethod
+    def main():
+        try:
+            print("Ingresando al primer try")
+
+            dividendo = float(input("Ingrese el dividendo: "))
+            divisor = float(input("Ingrese el divisor: "))
+
+            cociente = dividendo / divisor
+
+            print(f"Resultado de la división = {cociente}")
+
+        except ZeroDivisionError:
+            print("División por cero")
+
+        except ValueError:
+            print("Debe ingresar valores numéricos")
+
+        finally:
+            print("Ingresando al primer finally")
+
+        try:
+            print("\nIngresando al segundo try")
+
+            texto = input("Ingrese un texto: ")
+
+            if texto == "":
+                texto = None
+
+            print(texto.upper())
+
+        except AttributeError:
+            print("Ocurrió una excepción")
+
+        finally:
+            print("Ingresando al segundo finally")
+
+
+class ExcepcionFueraLimite:
+
+    @staticmethod
+    def main():
+        try:
+            texto = input("Ingrese un texto: ")
+            indice = int(input("Ingrese la posición que desea consultar: "))
+
+            caracter = texto[indice]
+
+            print(f"Carácter encontrado: {caracter}")
+
+        except IndexError:
+            print("Índice de string por fuera del límite")
+
+        except ValueError:
+            print("Debe ingresar una posición numérica")
+
+
+class ExcepcionFormatoNumero:
+
+    @staticmethod
+    def main():
+        try:
+            valor = input("Ingrese un número entero: ")
+
+            numero = int(valor)
+
+            print(f"Número ingresado: {numero}")
+
+        except ValueError:
+            print("Excepción de formato de número")
+
+        finally:
+            print("Ingresando al finally")
+
+
+def main():
+    while True:
+        print("EJERCICIO - EXCEPCIONES")
+        print("1. Prueba de excepciones")
+        print("2. Excepción fuera de límite")
+        print("3. Excepción formato de número")
+        print("4. Salir")
+
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            PruebaExcepciones.main()
+
+        elif opcion == "2":
+            ExcepcionFueraLimite.main()
+
+        elif opcion == "3":
+            ExcepcionFormatoNumero.main()
+
+        elif opcion == "4":
+            print("Programa finalizado.")
+            break
+
+        else:
+            print("Opción no válida")
+
+
+if __name__ == "__main__":
+    main()
