@@ -1,0 +1,126 @@
+class Vendedor:
+    def __init__(self, nombre: str, apellidos: str):
+        self.nombre = nombre
+        self.apellidos = apellidos
+        self.edad = 0
+
+    def verificar_edad(self, edad: int):
+        if edad < 18:
+            raise ValueError("El vendedor debe ser mayor de 18 años.")
+        if edad > 120:
+            raise ValueError("La edad no puede ser mayor a 120 años.")
+        self.edad = edad
+
+    def imprimir(self):
+        print("\nDATOS DEL VENDEDOR")
+        print(f"Nombre: {self.nombre}")
+        print(f"Apellidos: {self.apellidos}")
+        print(f"Edad: {self.edad}")
+
+
+class ProductoConPrecio:
+    def __init__(self, nombre: str, precio: float):
+        if precio < 0:
+            raise ValueError(f"El precio de '{nombre}' no puede ser negativo.")
+        self.nombre = nombre
+        self.precio = precio
+
+    def imprimir(self):
+        print("\nDATOS DEL PRODUCTO")
+        print(f"Producto: {self.nombre}")
+        print(f"Precio: ${self.precio:.2f}")
+
+
+class TablaASCII:
+    def __init__(self):
+        self._tabla = {}
+
+    def set(self, simbolo: str, numero: int):
+        if simbolo is None or simbolo == "":
+            raise ValueError("El símbolo no puede ser nulo o vacío.")
+        self._tabla[simbolo] = numero
+
+    def get(self, simbolo: str):
+        if simbolo is None:
+            raise ValueError("El símbolo no puede ser nulo.")
+        if simbolo not in self._tabla:
+            raise KeyError(f"El símbolo '{simbolo}' no existe en la tabla.")
+        return self._tabla[simbolo]
+
+
+def ejercicio_vendedor():
+    try:
+        nombre = input("Nombre del vendedor: ")
+        apellidos = input("Apellidos del vendedor: ")
+        edad = int(input("Edad del vendedor: "))
+
+        vendedor = Vendedor(nombre, apellidos)
+        vendedor.verificar_edad(edad)
+        vendedor.imprimir()
+
+    except ValueError as e:
+        print(f"Error: {e}")
+
+
+def ejercicio_producto():
+    try:
+        nombre = input("Nombre del producto: ")
+        precio = float(input("Precio del producto: "))
+
+        producto = ProductoConPrecio(nombre, precio)
+        producto.imprimir()
+
+    except ValueError as e:
+        print(f"Error: {e}")
+
+
+def ejercicio_ascii():
+    tabla = TablaASCII()
+
+    try:
+        cantidad = int(input("¿Cuántos símbolos desea registrar? "))
+
+        for i in range(cantidad):
+            print(f"\nSímbolo #{i + 1}")
+            simbolo = input("Símbolo: ")
+            numero = int(input("Valor ASCII: "))
+            tabla.set(simbolo, numero)
+
+        consulta = input("\nIngrese el símbolo a consultar: ")
+        print(f"Valor ASCII = {tabla.get(consulta)}")
+
+    except (ValueError, KeyError) as e:
+        print(f"Error: {e}")
+
+
+def main():
+    while True:
+        print("\n" + "=" * 10)
+        print("   MENU  ")
+        print("=" * 10)
+        print("1. Vendedor")
+        print("2. Producto con precio")
+        print("3. Tabla ASCII")
+        print("4. Salir")
+
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            ejercicio_vendedor()
+
+        elif opcion == "2":
+            ejercicio_producto()
+
+        elif opcion == "3":
+            ejercicio_ascii()
+
+        elif opcion == "4":
+            print("Programa finalizado.")
+            break
+
+        else:
+            print("Opción no válida.")
+
+
+if __name__ == "__main__":
+    main()
