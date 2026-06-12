@@ -1,0 +1,185 @@
+import math
+
+class CalculosNumericos:
+
+    @staticmethod
+    def calcular_logaritmo_neperiano(valor: float):
+        try:
+            if valor <= 0:
+                raise ArithmeticError("El valor debe ser mayor que cero para calcular el logaritmo.")
+            resultado = math.log(valor)
+            print(f"Resultado (logaritmo) = {resultado:.6f}")
+        except ArithmeticError as e:
+            print(e)
+        except Exception:
+            print("El valor debe ser numérico para calcular el logaritmo.")
+
+    @staticmethod
+    def calcular_raiz_cuadrada(valor: float):
+        try:
+            if valor < 0:
+                raise ArithmeticError("El valor debe ser positivo para calcular la raíz cuadrada.")
+            resultado = math.sqrt(valor)
+            print(f"Resultado (raíz cuadrada) = {resultado:.6f}")
+        except ArithmeticError as e:
+            print(e)
+        except Exception:
+            print("El valor debe ser numérico para calcular la raíz cuadrada.")
+
+
+class CalculosNumericos2(CalculosNumericos):
+
+    @staticmethod
+    def calcular_pendiente(x1: float, y1: float, x2: float, y2: float):
+        try:
+            if x1 == x2:
+                raise ZeroDivisionError("La recta es vertical; la pendiente no está definida.")
+            pendiente = (y2 - y1) / (x2 - x1)
+            print(f"Pendiente de la recta = {pendiente:.4f}")
+        except ZeroDivisionError as e:
+            print(e)
+
+    @staticmethod
+    def calcular_punto_medio(x1: float, y1: float, x2: float, y2: float):
+        try:
+            mx = (x1 + x2) / 2
+            my = (y1 + y2) / 2
+            print(f"Punto medio = ({mx:.4f}, {my:.4f})")
+        except Exception as e:
+            print(e)
+
+    @staticmethod
+    def calcular_raices_cuadratica(a: float, b: float, c: float):
+        try:
+            if a == 0:
+                raise ArithmeticError("El coeficiente 'a' no puede ser cero.")
+            discriminante = b**2 - 4 * a * c
+
+            if discriminante < 0:
+                raise ValueError("El discriminante es negativo; las raíces son complejas.")
+
+            r1 = (-b + math.sqrt(discriminante)) / (2 * a)
+            r2 = (-b - math.sqrt(discriminante)) / (2 * a)
+
+            print(f"Raíz 1 = {r1:.4f}")
+            print(f"Raíz 2 = {r2:.4f}")
+
+        except (ArithmeticError, ValueError) as e:
+            print(e)
+
+    @staticmethod
+    def convertir_base(numero: int, base: int):
+        try:
+            if numero < 0:
+                raise ValueError("El número debe ser no negativo.")
+
+            if base < 2 or base > 36:
+                raise ValueError("La base debe estar entre 2 y 36.")
+
+            digitos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            resultado = ""
+
+            if numero == 0:
+                resultado = "0"
+            else:
+                while numero > 0:
+                    resultado = digitos[numero % base] + resultado
+                    numero //= base
+
+            print(f"Resultado = {resultado}")
+
+        except ValueError as e:
+            print(e)
+
+
+def main():
+    while True:
+        print("\n" + "=" * 30)
+        print("MENÚ DE CÁLCULOS NUMÉRICOS")
+        print("=" * 30)
+        print("1. Logaritmo neperiano")
+        print("2. Raíz cuadrada")
+        print("3. Pendiente de una recta")
+        print("4. Punto medio")
+        print("5. Raíces de ecuación cuadrática")
+        print("6. Conversión de base")
+        print("7. Salir")
+
+        opcion = input("Seleccione una opción: ")
+
+        try:
+            if opcion == "1":
+                valor = float(input("Ingrese un valor: "))
+                CalculosNumericos.calcular_logaritmo_neperiano(valor)
+
+            elif opcion == "2":
+                valor = float(input("Ingrese un valor: "))
+                CalculosNumericos.calcular_raiz_cuadrada(valor)
+
+            elif opcion == "3":
+                print("\nIngrese las coordenadas de los dos puntos")
+
+                x1 = float(input("x1: "))
+                y1 = float(input("y1: "))
+                x2 = float(input("x2: "))
+                y2 = float(input("y2: "))
+
+                CalculosNumericos2.calcular_pendiente(x1, y1, x2, y2)
+
+            elif opcion == "4":
+                print("\nIngrese las coordenadas de los dos puntos")
+
+                x1 = float(input("x1: "))
+                y1 = float(input("y1: "))
+                x2 = float(input("x2: "))
+                y2 = float(input("y2: "))
+
+                CalculosNumericos2.calcular_punto_medio(x1, y1, x2, y2)
+
+            elif opcion == "5":
+                print("\nEcuación cuadrática: ax² + bx + c = 0")
+
+                a = float(input("Ingrese a: "))
+                b = float(input("Ingrese b: "))
+                c = float(input("Ingrese c: "))
+
+                CalculosNumericos2.calcular_raices_cuadratica(a, b, c)
+
+            elif opcion == "6":
+                numero = int(input("Ingrese el número decimal: "))
+
+                print("\nSeleccione la base destino:")
+                print("1. Binario (Base 2)")
+                print("2. Octal (Base 8)")
+                print("3. Decimal (Base 10)")
+                print("4. Hexadecimal (Base 16)")
+
+                opcion_base = input("Opción: ")
+
+                if opcion_base == "1":
+                    base = 2
+                elif opcion_base == "2":
+                    base = 8
+                elif opcion_base == "3":
+                    base = 10
+                elif opcion_base == "4":
+                    base = 16
+                else:
+                    print("Opción de base no válida.")
+                    continue
+
+                CalculosNumericos2.convertir_base(numero, base)
+
+            elif opcion == "7":
+                print("Programa finalizado.")
+                break
+
+            else:
+                print("Opción no válida.")
+
+        except ValueError:
+            print("Debe ingresar valores numéricos válidos.")
+
+
+if __name__ == "__main__":
+    main()
