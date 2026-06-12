@@ -1,0 +1,96 @@
+class Programador:
+    def __init__(self, nombre, apellidos):
+        self.validar_texto(nombre, "Nombre")
+        self.validar_texto(apellidos, "Apellidos")
+
+        self.nombre = nombre
+        self.apellidos = apellidos
+
+    @staticmethod
+    def validar_texto(texto, campo):
+        if len(texto) >= 20:
+            raise ValueError(f"{campo} no puede tener 20 o más caracteres.")
+
+        for caracter in texto:
+            if caracter.isdigit():
+                raise ValueError(f"{campo} solo debe contener letras.")
+
+    def imprimir(self):
+        print(f"Nombre: {self.nombre}")
+        print(f"Apellidos: {self.apellidos}")
+
+
+class EquipoMaratonProgramacion:
+    def __init__(self, nombre_equipo, universidad, lenguaje, tamano_equipo):
+        if tamano_equipo < 2 or tamano_equipo > 3:
+            raise ValueError("El tamaño del equipo debe ser entre 2 y 3 integrantes.")
+
+        self.nombre_equipo = nombre_equipo
+        self.universidad = universidad
+        self.lenguaje = lenguaje
+        self.tamano_equipo = tamano_equipo
+        self.programadores = []
+
+    def equipo_completo(self):
+        return len(self.programadores) == self.tamano_equipo
+
+    def agregar_programador(self, programador):
+        if self.equipo_completo():
+            raise Exception("El equipo ya está completo.")
+
+        self.programadores.append(programador)
+
+    def imprimir_equipo(self):
+        print("\nDATOS DEL EQUIPO")
+        print(f"Nombre del equipo: {self.nombre_equipo}")
+        print(f"Universidad: {self.universidad}")
+        print(f"Lenguaje: {self.lenguaje}")
+        print(f"Tamaño del equipo: {self.tamano_equipo}")
+
+        print("\nPROGRAMADORES")
+        for i, programador in enumerate(self.programadores, start=1):
+            print(f"\nProgramador {i}")
+            programador.imprimir()
+
+
+def main():
+    try:
+        print("\n" + "=" * 50)
+        print(" REGISTRO DE EQUIPO PARA MARATÓN DE PROGRAMACIÓN ")
+        print("=" * 50)
+
+
+        nombre_equipo = input("Nombre del equipo: ")
+        universidad = input("Universidad: ")
+        lenguaje = input("Lenguaje de programación: ")
+
+        tamano_equipo = int(input("Tamaño del equipo (2 o 3): "))
+
+        equipo = EquipoMaratonProgramacion(
+            nombre_equipo,
+            universidad,
+            lenguaje,
+            tamano_equipo
+        )
+
+        for i in range(tamano_equipo):
+            print(f"\n--- Programador {i + 1} ---")
+
+            nombre = input("Nombre: ")
+            apellidos = input("Apellidos: ")
+
+            try:
+                programador = Programador(nombre, apellidos)
+                equipo.agregar_programador(programador)
+                print("Programador agregado correctamente.")
+            except Exception as e:
+                print(f"Error: {e}")
+
+        equipo.imprimir_equipo()
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+if __name__ == "__main__":
+    main()
