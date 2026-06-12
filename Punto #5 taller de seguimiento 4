@@ -1,0 +1,31 @@
+class LeerArchivo:
+
+    @staticmethod
+    def leer(nombre_archivo):
+        try:
+            with open(nombre_archivo, "r", encoding="utf-8") as archivo:
+                print("\nCONTENIDO DEL ARCHIVO")
+                print("-" * 40)
+
+                for linea in archivo:
+                    print(linea.upper(), end="")
+
+                print("\n" + "-" * 40)
+
+        except FileNotFoundError:
+            print("No se pudo leer el archivo. El archivo no existe.")
+
+        except PermissionError:
+            print("No tiene permisos para leer el archivo.")
+
+        except Exception as e:
+            print(f"Ocurrió un error: {e}")
+
+
+def main():
+    nombre_archivo = input("Ingrese el nombre del archivo: ")
+    LeerArchivo.leer(nombre_archivo)
+
+
+if __name__ == "__main__":
+    main()
