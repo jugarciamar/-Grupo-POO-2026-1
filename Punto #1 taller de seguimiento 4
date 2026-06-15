@@ -1,106 +1,128 @@
+import tkinter as tk
+from tkinter import ttk, scrolledtext
+
+
 class PruebaExcepciones:
-
     @staticmethod
-    def main():
+    def ejecutar(dividendo_str, divisor_str, texto):
+        log = []
         try:
-            print("Ingresando al primer try")
-
-            dividendo = float(input("Ingrese el dividendo: "))
-            divisor = float(input("Ingrese el divisor: "))
-
+            log.append("Ingresando al primer try")
+            dividendo = float(dividendo_str)
+            divisor = float(divisor_str)
             cociente = dividendo / divisor
-
-            print(f"Resultado de la división = {cociente}")
-
+            log.append(f"Resultado de la division = {cociente}")
         except ZeroDivisionError:
-            print("División por cero")
-
+            log.append("Division por cero")
         except ValueError:
-            print("Debe ingresar valores numéricos")
-
+            log.append("Debe ingresar valores numericos")
         finally:
-            print("Ingresando al primer finally")
-
+            log.append("Ingresando al primer finally")
         try:
-            print("\nIngresando al segundo try")
-
-            texto = input("Ingrese un texto: ")
-
-            if texto == "":
-                texto = None
-
-            print(texto.upper())
-
+            log.append("Ingresando al segundo try")
+            val = texto if texto.strip() != "" else None
+            log.append(val.upper())
         except AttributeError:
-            print("Ocurrió una excepción")
-
+            log.append("Ocurrio una excepcion")
         finally:
-            print("Ingresando al segundo finally")
+            log.append("Ingresando al segundo finally")
+        return "\n".join(log)
 
 
 class ExcepcionFueraLimite:
-
     @staticmethod
-    def main():
+    def ejecutar(texto, indice_str):
         try:
-            texto = input("Ingrese un texto: ")
-            indice = int(input("Ingrese la posición que desea consultar: "))
-
+            indice = int(indice_str)
             caracter = texto[indice]
-
-            print(f"Carácter encontrado: {caracter}")
-
+            return f"Caracter encontrado: {caracter}"
         except IndexError:
-            print("Índice de string por fuera del límite")
-
+            return "Indice de string por fuera del limite"
         except ValueError:
-            print("Debe ingresar una posición numérica")
+            return "Debe ingresar una posicion numerica"
 
 
 class ExcepcionFormatoNumero:
-
     @staticmethod
-    def main():
+    def ejecutar(valor_str):
+        log = []
         try:
-            valor = input("Ingrese un número entero: ")
-
-            numero = int(valor)
-
-            print(f"Número ingresado: {numero}")
-
+            numero = int(valor_str)
+            log.append(f"Numero ingresado: {numero}")
         except ValueError:
-            print("Excepción de formato de número")
-
+            log.append("Excepcion de formato de numero")
         finally:
-            print("Ingresando al finally")
+            log.append("Ingresando al finally")
+        return "\n".join(log)
 
 
-def main():
-    while True:
-        print("EJERCICIO - EXCEPCIONES")
-        print("1. Prueba de excepciones")
-        print("2. Excepción fuera de límite")
-        print("3. Excepción formato de número")
-        print("4. Salir")
+def mostrar(caja, texto):
+    caja.config(state="normal")
+    caja.delete("1.0", "end")
+    caja.insert("end", texto)
+    caja.config(state="disabled")
 
-        opcion = input("Seleccione una opción: ")
 
-        if opcion == "1":
-            PruebaExcepciones.main()
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Ejercicio 1 - Excepciones")
+        self.geometry("480x420")
+        self.resizable(False, False)
+        nb = ttk.Notebook(self)
+        nb.pack(fill="both", expand=True, padx=10, pady=10)
+        self.tab1(nb)
+        self.tab2(nb)
+        self.tab3(nb)
 
-        elif opcion == "2":
-            ExcepcionFueraLimite.main()
+    def tab1(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Prueba Excepciones")
+        tk.Label(t, text="Dividendo:").grid(row=0, column=0, sticky="w", pady=3)
+        self.div = tk.Entry(t, width=22)
+        self.div.grid(row=0, column=1, pady=3)
+        tk.Label(t, text="Divisor:").grid(row=1, column=0, sticky="w", pady=3)
+        self.dis = tk.Entry(t, width=22)
+        self.dis.grid(row=1, column=1, pady=3)
+        tk.Label(t, text="Texto (vacio = null):").grid(row=2, column=0, sticky="w", pady=3)
+        self.txt1 = tk.Entry(t, width=22)
+        self.txt1.grid(row=2, column=1, pady=3)
+        tk.Button(t, text="Ejecutar", command=self.run1).grid(row=3, column=0, columnspan=2, pady=8)
+        self.out1 = scrolledtext.ScrolledText(t, height=8, width=52, state="disabled")
+        self.out1.grid(row=4, column=0, columnspan=2)
 
-        elif opcion == "3":
-            ExcepcionFormatoNumero.main()
+    def run1(self):
+        mostrar(self.out1, PruebaExcepciones.ejecutar(self.div.get(), self.dis.get(), self.txt1.get()))
 
-        elif opcion == "4":
-            print("Programa finalizado.")
-            break
+    def tab2(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Fuera de Limite")
+        tk.Label(t, text="Texto:").grid(row=0, column=0, sticky="w", pady=3)
+        self.txt2 = tk.Entry(t, width=28)
+        self.txt2.grid(row=0, column=1, pady=3)
+        tk.Label(t, text="Indice:").grid(row=1, column=0, sticky="w", pady=3)
+        self.idx = tk.Entry(t, width=10)
+        self.idx.grid(row=1, column=1, pady=3, sticky="w")
+        tk.Button(t, text="Consultar", command=self.run2).grid(row=2, column=0, columnspan=2, pady=8)
+        self.out2 = scrolledtext.ScrolledText(t, height=6, width=52, state="disabled")
+        self.out2.grid(row=3, column=0, columnspan=2)
 
-        else:
-            print("Opción no válida")
+    def run2(self):
+        mostrar(self.out2, ExcepcionFueraLimite.ejecutar(self.txt2.get(), self.idx.get()))
+
+    def tab3(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Formato de Numero")
+        tk.Label(t, text="Valor:").grid(row=0, column=0, sticky="w", pady=3)
+        self.val = tk.Entry(t, width=22)
+        self.val.grid(row=0, column=1, pady=3)
+        tk.Button(t, text="Convertir", command=self.run3).grid(row=1, column=0, columnspan=2, pady=8)
+        self.out3 = scrolledtext.ScrolledText(t, height=6, width=52, state="disabled")
+        self.out3.grid(row=2, column=0, columnspan=2)
+
+    def run3(self):
+        mostrar(self.out3, ExcepcionFormatoNumero.ejecutar(self.val.get()))
 
 
 if __name__ == "__main__":
-    main()
+    App().mainloop()
