@@ -1,96 +1,150 @@
+import tkinter as tk
+from tkinter import ttk, scrolledtext
+
+
 class Programador:
     def __init__(self, nombre, apellidos):
-        self.validar_texto(nombre, "Nombre")
-        self.validar_texto(apellidos, "Apellidos")
-
+        self._validar(nombre, "Nombre")
+        self._validar(apellidos, "Apellidos")
         self.nombre = nombre
         self.apellidos = apellidos
 
     @staticmethod
-    def validar_texto(texto, campo):
+    def _validar(texto, campo):
         if len(texto) >= 20:
-            raise ValueError(f"{campo} no puede tener 20 o más caracteres.")
-
-        for caracter in texto:
-            if caracter.isdigit():
+            raise ValueError(f"{campo} no puede tener 20 o mas caracteres.")
+        for c in texto:
+            if c.isdigit():
                 raise ValueError(f"{campo} solo debe contener letras.")
 
     def imprimir(self):
-        print(f"Nombre: {self.nombre}")
-        print(f"Apellidos: {self.apellidos}")
+        return f"Nombre: {self.nombre}\nApellidos: {self.apellidos}"
 
 
 class EquipoMaratonProgramacion:
-    def __init__(self, nombre_equipo, universidad, lenguaje, tamano_equipo):
-        if tamano_equipo < 2 or tamano_equipo > 3:
-            raise ValueError("El tamaño del equipo debe ser entre 2 y 3 integrantes.")
-
-        self.nombre_equipo = nombre_equipo
+    def __init__(self, nombre, universidad, lenguaje, tamano):
+        if tamano < 2 or tamano > 3:
+            raise ValueError("El tamano del equipo debe ser 2 o 3.")
+        self.nombre = nombre
         self.universidad = universidad
         self.lenguaje = lenguaje
-        self.tamano_equipo = tamano_equipo
+        self.tamano = tamano
         self.programadores = []
 
     def equipo_completo(self):
-        return len(self.programadores) == self.tamano_equipo
+        return len(self.programadores) == self.tamano
 
-    def agregar_programador(self, programador):
+    def agregar_programador(self, p):
         if self.equipo_completo():
-            raise Exception("El equipo ya está completo.")
+            raise Exception("El equipo ya esta completo.")
+        self.programadores.append(p)
 
-        self.programadores.append(programador)
-
-    def imprimir_equipo(self):
-        print("\nDATOS DEL EQUIPO")
-        print(f"Nombre del equipo: {self.nombre_equipo}")
-        print(f"Universidad: {self.universidad}")
-        print(f"Lenguaje: {self.lenguaje}")
-        print(f"Tamaño del equipo: {self.tamano_equipo}")
-
-        print("\nPROGRAMADORES")
-        for i, programador in enumerate(self.programadores, start=1):
-            print(f"\nProgramador {i}")
-            programador.imprimir()
-
-
-def main():
-    try:
-        print("\n" + "=" * 50)
-        print(" REGISTRO DE EQUIPO PARA MARATÓN DE PROGRAMACIÓN ")
-        print("=" * 50)
+    def imprimir(self):
+        lineas = [
+            f"Nombre del equipo : {self.nombre}",
+            f"Universidad       : {self.universidad}",
+            f"Lenguaje          : {self.lenguaje}",
+            f"Tamano del equipo : {self.tamano}",
+            "",
+            "Integrantes:",
+        ]
+        for i, p in enumerate(self.programadores, 1):
+            lineas.append(f"  {i}. {p.nombre} {p.apellidos}")
+        return "\n".join(lineas)
 
 
-        nombre_equipo = input("Nombre del equipo: ")
-        universidad = input("Universidad: ")
-        lenguaje = input("Lenguaje de programación: ")
+def mostrar(caja, texto):
+    caja.config(state="normal")
+    caja.delete("1.0", "end")
+    caja.insert("end", texto)
+    caja.config(state="disabled")
 
-        tamano_equipo = int(input("Tamaño del equipo (2 o 3): "))
 
-        equipo = EquipoMaratonProgramacion(
-            nombre_equipo,
-            universidad,
-            lenguaje,
-            tamano_equipo
-        )
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Ejercicio 4 - Validacion de Campos")
+        self.geometry("480x460")
+        self.resizable(False, False)
+        self._equipo = None
+        nb = ttk.Notebook(self)
+        nb.pack(fill="both", expand=True, padx=10, pady=10)
+        self.tab_equipo(nb)
+        self.tab_programador(nb)
+        self.tab_resumen(nb)
 
-        for i in range(tamano_equipo):
-            print(f"\n--- Programador {i + 1} ---")
+    def tab_equipo(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Crear Equipo")
+        tk.Label(t, text="Nombre del equipo:").grid(row=0, column=0, sticky="w", pady=3)
+        self.eq_nom = tk.Entry(t, width=24)
+        self.eq_nom.grid(row=0, column=1, pady=3)
+        tk.Label(t, text="Universidad:").grid(row=1, column=0, sticky="w", pady=3)
+        self.eq_uni = tk.Entry(t, width=24)
+        self.eq_uni.grid(row=1, column=1, pady=3)
+        tk.Label(t, text="Lenguaje:").grid(row=2, column=0, sticky="w", pady=3)
+        self.eq_lang = tk.Entry(t, width=24)
+        self.eq_lang.grid(row=2, column=1, pady=3)
+        tk.Label(t, text="Tamano (2 o 3):").grid(row=3, column=0, sticky="w", pady=3)
+        self.eq_tam = tk.StringVar(value="3")
+        frame_r = tk.Frame(t)
+        frame_r.grid(row=3, column=1, sticky="w")
+        tk.Radiobutton(frame_r, text="2", variable=self.eq_tam, value="2").pack(side="left", padx=4)
+        tk.Radiobutton(frame_r, text="3", variable=self.eq_tam, value="3").pack(side="left", padx=4)
+        tk.Button(t, text="Crear equipo", command=self.run_crear).grid(row=4, column=0, columnspan=2, pady=10)
+        self.out_eq = scrolledtext.ScrolledText(t, height=7, width=52, state="disabled")
+        self.out_eq.grid(row=5, column=0, columnspan=2)
 
-            nombre = input("Nombre: ")
-            apellidos = input("Apellidos: ")
+    def run_crear(self):
+        try:
+            self._equipo = EquipoMaratonProgramacion(
+                self.eq_nom.get(), self.eq_uni.get(),
+                self.eq_lang.get(), int(self.eq_tam.get())
+            )
+            mostrar(self.out_eq, f"Equipo '{self._equipo.nombre}' creado correctamente.\nCupos: {self._equipo.tamano}")
+        except ValueError as e:
+            mostrar(self.out_eq, f"Error: {e}")
+            self._equipo = None
 
-            try:
-                programador = Programador(nombre, apellidos)
-                equipo.agregar_programador(programador)
-                print("Programador agregado correctamente.")
-            except Exception as e:
-                print(f"Error: {e}")
+    def tab_programador(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Agregar Programador")
+        tk.Label(t, text="Nombre:").grid(row=0, column=0, sticky="w", pady=3)
+        self.pr_nom = tk.Entry(t, width=24)
+        self.pr_nom.grid(row=0, column=1, pady=3)
+        tk.Label(t, text="Apellidos:").grid(row=1, column=0, sticky="w", pady=3)
+        self.pr_ape = tk.Entry(t, width=24)
+        self.pr_ape.grid(row=1, column=1, pady=3)
+        tk.Button(t, text="Agregar", command=self.run_agregar).grid(row=2, column=0, columnspan=2, pady=10)
+        self.out_pr = scrolledtext.ScrolledText(t, height=8, width=52, state="disabled")
+        self.out_pr.grid(row=3, column=0, columnspan=2)
 
-        equipo.imprimir_equipo()
+    def run_agregar(self):
+        if self._equipo is None:
+            mostrar(self.out_pr, "Primero cree el equipo en la pestana anterior.")
+            return
+        try:
+            p = Programador(self.pr_nom.get(), self.pr_ape.get())
+            self._equipo.agregar_programador(p)
+            self.pr_nom.delete(0, "end")
+            self.pr_ape.delete(0, "end")
+            mostrar(self.out_pr, f"Programador agregado correctamente.\n\n{p.imprimir()}\n\nIntegrantes: {len(self._equipo.programadores)} / {self._equipo.tamano}")
+        except (ValueError, Exception) as e:
+            mostrar(self.out_pr, f"Error: {e}")
 
-    except Exception as e:
-        print(f"Error: {e}")
+    def tab_resumen(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Resumen")
+        tk.Button(t, text="Ver resumen del equipo", command=self.run_resumen).pack(pady=10)
+        self.out_res = scrolledtext.ScrolledText(t, height=14, width=52, state="disabled")
+        self.out_res.pack()
+
+    def run_resumen(self):
+        if self._equipo is None:
+            mostrar(self.out_res, "No hay equipo registrado.")
+            return
+        mostrar(self.out_res, self._equipo.imprimir())
 
 
 if __name__ == "__main__":
-    main()
+    App().mainloop()
