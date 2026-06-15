@@ -1,126 +1,164 @@
+import tkinter as tk
+from tkinter import ttk, scrolledtext
+
+
 class Vendedor:
-    def __init__(self, nombre: str, apellidos: str):
+    def __init__(self, nombre, apellidos):
         self.nombre = nombre
         self.apellidos = apellidos
         self.edad = 0
 
-    def verificar_edad(self, edad: int):
+    def verificar_edad(self, edad):
         if edad < 18:
-            raise ValueError("El vendedor debe ser mayor de 18 años.")
+            raise ValueError("El vendedor debe ser mayor de 18 anos.")
         if edad > 120:
-            raise ValueError("La edad no puede ser mayor a 120 años.")
+            raise ValueError("La edad no puede ser negativa ni mayor a 120.")
         self.edad = edad
 
     def imprimir(self):
-        print("\nDATOS DEL VENDEDOR")
-        print(f"Nombre: {self.nombre}")
-        print(f"Apellidos: {self.apellidos}")
-        print(f"Edad: {self.edad}")
+        return (
+            f"Nombre del vendedor    = {self.nombre}\n"
+            f"Apellidos del vendedor = {self.apellidos}\n"
+            f"Edad del vendedor      = {self.edad}"
+        )
 
 
 class ProductoConPrecio:
-    def __init__(self, nombre: str, precio: float):
+    def __init__(self, nombre, precio):
         if precio < 0:
             raise ValueError(f"El precio de '{nombre}' no puede ser negativo.")
         self.nombre = nombre
         self.precio = precio
 
     def imprimir(self):
-        print("\nDATOS DEL PRODUCTO")
-        print(f"Producto: {self.nombre}")
-        print(f"Precio: ${self.precio:.2f}")
+        return (
+            f"Producto : {self.nombre}\n"
+            f"Precio   : ${self.precio:.2f}"
+        )
 
 
 class TablaASCII:
     def __init__(self):
         self._tabla = {}
 
-    def set(self, simbolo: str, numero: int):
-        if simbolo is None or simbolo == "":
-            raise ValueError("El símbolo no puede ser nulo o vacío.")
+    def set(self, simbolo, numero):
+        if not simbolo:
+            raise ValueError("El simbolo no puede ser vacio.")
         self._tabla[simbolo] = numero
 
-    def get(self, simbolo: str):
-        if simbolo is None:
-            raise ValueError("El símbolo no puede ser nulo.")
+    def get(self, simbolo):
         if simbolo not in self._tabla:
-            raise KeyError(f"El símbolo '{simbolo}' no existe en la tabla.")
+            raise KeyError(f"El simbolo '{simbolo}' no existe en la tabla.")
         return self._tabla[simbolo]
 
-
-def ejercicio_vendedor():
-    try:
-        nombre = input("Nombre del vendedor: ")
-        apellidos = input("Apellidos del vendedor: ")
-        edad = int(input("Edad del vendedor: "))
-
-        vendedor = Vendedor(nombre, apellidos)
-        vendedor.verificar_edad(edad)
-        vendedor.imprimir()
-
-    except ValueError as e:
-        print(f"Error: {e}")
+    def lista(self):
+        if not self._tabla:
+            return "(tabla vacia)"
+        return "\n".join(f"  '{k}' -> {v}" for k, v in self._tabla.items())
 
 
-def ejercicio_producto():
-    try:
-        nombre = input("Nombre del producto: ")
-        precio = float(input("Precio del producto: "))
-
-        producto = ProductoConPrecio(nombre, precio)
-        producto.imprimir()
-
-    except ValueError as e:
-        print(f"Error: {e}")
+def mostrar(caja, texto):
+    caja.config(state="normal")
+    caja.delete("1.0", "end")
+    caja.insert("end", texto)
+    caja.config(state="disabled")
 
 
-def ejercicio_ascii():
-    tabla = TablaASCII()
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Ejercicio 2 - Lanzamiento de Excepciones")
+        self.geometry("480x440")
+        self.resizable(False, False)
+        self._tabla = TablaASCII()
+        nb = ttk.Notebook(self)
+        nb.pack(fill="both", expand=True, padx=10, pady=10)
+        self.tab_vendedor(nb)
+        self.tab_producto(nb)
+        self.tab_ascii(nb)
 
-    try:
-        cantidad = int(input("¿Cuántos símbolos desea registrar? "))
+    def tab_vendedor(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Vendedor")
+        tk.Label(t, text="Nombre:").grid(row=0, column=0, sticky="w", pady=3)
+        self.v_nom = tk.Entry(t, width=24)
+        self.v_nom.grid(row=0, column=1, pady=3)
+        tk.Label(t, text="Apellidos:").grid(row=1, column=0, sticky="w", pady=3)
+        self.v_ape = tk.Entry(t, width=24)
+        self.v_ape.grid(row=1, column=1, pady=3)
+        tk.Label(t, text="Edad:").grid(row=2, column=0, sticky="w", pady=3)
+        self.v_edad = tk.Entry(t, width=10)
+        self.v_edad.grid(row=2, column=1, pady=3, sticky="w")
+        tk.Button(t, text="Registrar", command=self.run_vendedor).grid(row=3, column=0, columnspan=2, pady=8)
+        self.out_v = scrolledtext.ScrolledText(t, height=7, width=52, state="disabled")
+        self.out_v.grid(row=4, column=0, columnspan=2)
 
-        for i in range(cantidad):
-            print(f"\nSímbolo #{i + 1}")
-            simbolo = input("Símbolo: ")
-            numero = int(input("Valor ASCII: "))
-            tabla.set(simbolo, numero)
+    def run_vendedor(self):
+        try:
+            v = Vendedor(self.v_nom.get(), self.v_ape.get())
+            v.verificar_edad(int(self.v_edad.get()))
+            mostrar(self.out_v, v.imprimir())
+        except ValueError as e:
+            mostrar(self.out_v, f"Error: {e}")
+        except Exception as e:
+            mostrar(self.out_v, f"Error: {e}")
 
-        consulta = input("\nIngrese el símbolo a consultar: ")
-        print(f"Valor ASCII = {tabla.get(consulta)}")
+    def tab_producto(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Producto")
+        tk.Label(t, text="Nombre:").grid(row=0, column=0, sticky="w", pady=3)
+        self.p_nom = tk.Entry(t, width=24)
+        self.p_nom.grid(row=0, column=1, pady=3)
+        tk.Label(t, text="Precio:").grid(row=1, column=0, sticky="w", pady=3)
+        self.p_pre = tk.Entry(t, width=14)
+        self.p_pre.grid(row=1, column=1, pady=3, sticky="w")
+        tk.Button(t, text="Registrar", command=self.run_producto).grid(row=2, column=0, columnspan=2, pady=8)
+        self.out_p = scrolledtext.ScrolledText(t, height=7, width=52, state="disabled")
+        self.out_p.grid(row=3, column=0, columnspan=2)
 
-    except (ValueError, KeyError) as e:
-        print(f"Error: {e}")
+    def run_producto(self):
+        try:
+            prod = ProductoConPrecio(self.p_nom.get(), float(self.p_pre.get()))
+            mostrar(self.out_p, prod.imprimir())
+        except ValueError as e:
+            mostrar(self.out_p, f"Error: {e}")
 
+    def tab_ascii(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Tabla ASCII")
 
-def main():
-    while True:
-        print("\n" + "=" * 10)
-        print("   MENU  ")
-        print("=" * 10)
-        print("1. Vendedor")
-        print("2. Producto con precio")
-        print("3. Tabla ASCII")
-        print("4. Salir")
+        tk.Label(t, text="--- Agregar ---").grid(row=0, column=0, columnspan=2, pady=(0, 4))
+        tk.Label(t, text="Simbolo:").grid(row=1, column=0, sticky="w", pady=3)
+        self.a_sim = tk.Entry(t, width=8)
+        self.a_sim.grid(row=1, column=1, pady=3, sticky="w")
+        tk.Label(t, text="Valor ASCII:").grid(row=2, column=0, sticky="w", pady=3)
+        self.a_val = tk.Entry(t, width=8)
+        self.a_val.grid(row=2, column=1, pady=3, sticky="w")
+        tk.Button(t, text="Agregar", command=self.run_set).grid(row=3, column=0, columnspan=2, pady=4)
 
-        opcion = input("Seleccione una opción: ")
+        tk.Label(t, text="--- Consultar ---").grid(row=4, column=0, columnspan=2, pady=(8, 4))
+        tk.Label(t, text="Simbolo:").grid(row=5, column=0, sticky="w", pady=3)
+        self.a_get = tk.Entry(t, width=8)
+        self.a_get.grid(row=5, column=1, pady=3, sticky="w")
+        tk.Button(t, text="Consultar", command=self.run_get).grid(row=6, column=0, columnspan=2, pady=4)
 
-        if opcion == "1":
-            ejercicio_vendedor()
+        self.out_a = scrolledtext.ScrolledText(t, height=6, width=52, state="disabled")
+        self.out_a.grid(row=7, column=0, columnspan=2, pady=(8, 0))
 
-        elif opcion == "2":
-            ejercicio_producto()
+    def run_set(self):
+        try:
+            self._tabla.set(self.a_sim.get(), int(self.a_val.get()))
+            mostrar(self.out_a, f"Registrado.\n\nTabla actual:\n{self._tabla.lista()}")
+        except (ValueError, KeyError) as e:
+            mostrar(self.out_a, f"Error: {e}")
 
-        elif opcion == "3":
-            ejercicio_ascii()
-
-        elif opcion == "4":
-            print("Programa finalizado.")
-            break
-
-        else:
-            print("Opción no válida.")
+    def run_get(self):
+        try:
+            val = self._tabla.get(self.a_get.get())
+            mostrar(self.out_a, f"Valor ASCII de '{self.a_get.get()}' = {val}\n\nTabla actual:\n{self._tabla.lista()}")
+        except (ValueError, KeyError) as e:
+            mostrar(self.out_a, f"Error: {e}")
 
 
 if __name__ == "__main__":
-    main()
+    App().mainloop()
