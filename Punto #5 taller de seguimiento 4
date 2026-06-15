@@ -1,31 +1,86 @@
-class LeerArchivo:
+import tkinter as tk
+from tkinter import scrolledtext, filedialog
+import os
 
+
+class LeerArchivo:
     @staticmethod
     def leer(nombre_archivo):
+        lineas = []
         try:
             with open(nombre_archivo, "r", encoding="utf-8") as archivo:
-                print("\nCONTENIDO DEL ARCHIVO")
-                print("-" * 40)
-
-                for linea in archivo:
-                    print(linea.upper(), end="")
-
-                print("\n" + "-" * 40)
-
+                linea = archivo.readline()
+                while linea:
+                    lineas.append(linea)
+                    linea = archivo.readline()
+            if not lineas:
+                return "(El archivo esta vacio)", False
+            return "".join(lineas), False
         except FileNotFoundError:
-            print("No se pudo leer el archivo. El archivo no existe.")
-
+            return "No se pudo leer el archivo. El archivo no existe.", True
         except PermissionError:
-            print("No tiene permisos para leer el archivo.")
-
+            return "No tiene permisos para leer el archivo.", True
         except Exception as e:
-            print(f"Ocurrió un error: {e}")
+            return f"Ocurrio un error: {e}", True
 
 
-def main():
-    nombre_archivo = input("Ingrese el nombre del archivo: ")
-    LeerArchivo.leer(nombre_archivo)
+def mostrar(caja, texto):
+    caja.config(state="normal")
+    caja.delete("1.0", "end")
+    caja.insert("end", texto)
+    caja.config(state="disabled")
+
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Ejercicio 5 - Lectura de Archivos")
+        self.geometry("520x460")
+        self.resizable(False, False)
+        self.construir()
+
+    def construir(self):
+        frame = tk.Frame(self, padx=14, pady=14)
+        frame.pack(fill="both", expand=True)
+
+        tk.Label(frame, text="Ruta del archivo:").grid(row=0, column=0, sticky="w", pady=4)
+        self.e_ruta = tk.Entry(frame, width=34)
+        self.e_ruta.grid(row=0, column=1, pady=4)
+        self.e_ruta.insert(0, "prueba.txt")
+
+        tk.Button(frame, text="Explorar", command=self.explorar).grid(row=0, column=2, padx=6, pady=4)
+        tk.Button(frame, text="Leer archivo", command=self.leer).grid(row=1, column=0, columnspan=3, pady=8)
+
+        self.lbl_info = tk.Label(frame, text="")
+        self.lbl_info.grid(row=2, column=0, columnspan=3, sticky="w")
+
+        self.out = scrolledtext.ScrolledText(frame, height=16, width=58, state="disabled")
+        self.out.grid(row=3, column=0, columnspan=3, pady=6)
+
+    def explorar(self):
+        ruta = filedialog.askopenfilename(
+            title="Seleccionar archivo",
+            filetypes=[("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*")]
+        )
+        if ruta:
+            self.e_ruta.delete(0, "end")
+            self.e_ruta.insert(0, ruta)
+
+    def leer(self):
+        ruta = self.e_ruta.get().strip()
+        if not ruta:
+            mostrar(self.out, "Ingrese la ruta del archivo.")
+            self.lbl_info.config(text="")
+            return
+        contenido, es_error = LeerArchivo.leer(ruta)
+        mostrar(self.out, contenido)
+        if not es_error:
+            lineas = contenido.count("\n") + 1
+            nombre = os.path.basename(ruta)
+            self.lbl_info.config(text=f"Archivo: {nombre}  |  Lineas: {lineas}")
+        else:
+            self.lbl_info.config(text="Error al leer el archivo.")
 
 
 if __name__ == "__main__":
-    main()
+    App().mainloop()
