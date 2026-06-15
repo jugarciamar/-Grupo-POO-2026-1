@@ -1,185 +1,186 @@
 import math
+import tkinter as tk
+from tkinter import ttk, scrolledtext
+
 
 class CalculosNumericos:
+    @staticmethod
+    def calcular_logaritmo_neperiano(valor):
+        if valor <= 0:
+            raise ArithmeticError("El valor debe ser un numero positivo para calcular el logaritmo.")
+        return f"Resultado (logaritmo neperiano) = {math.log(valor):.6f}"
 
     @staticmethod
-    def calcular_logaritmo_neperiano(valor: float):
-        try:
-            if valor <= 0:
-                raise ArithmeticError("El valor debe ser mayor que cero para calcular el logaritmo.")
-            resultado = math.log(valor)
-            print(f"Resultado (logaritmo) = {resultado:.6f}")
-        except ArithmeticError as e:
-            print(e)
-        except Exception:
-            print("El valor debe ser numérico para calcular el logaritmo.")
-
-    @staticmethod
-    def calcular_raiz_cuadrada(valor: float):
-        try:
-            if valor < 0:
-                raise ArithmeticError("El valor debe ser positivo para calcular la raíz cuadrada.")
-            resultado = math.sqrt(valor)
-            print(f"Resultado (raíz cuadrada) = {resultado:.6f}")
-        except ArithmeticError as e:
-            print(e)
-        except Exception:
-            print("El valor debe ser numérico para calcular la raíz cuadrada.")
+    def calcular_raiz_cuadrada(valor):
+        if valor < 0:
+            raise ArithmeticError("El valor debe ser positivo para calcular la raiz cuadrada.")
+        return f"Resultado (raiz cuadrada) = {math.sqrt(valor):.6f}"
 
 
 class CalculosNumericos2(CalculosNumericos):
+    @staticmethod
+    def calcular_pendiente(x1, y1, x2, y2):
+        if x1 == x2:
+            raise ZeroDivisionError("La recta es vertical; la pendiente no esta definida.")
+        return f"Pendiente de la recta = {(y2 - y1) / (x2 - x1):.4f}"
 
     @staticmethod
-    def calcular_pendiente(x1: float, y1: float, x2: float, y2: float):
-        try:
-            if x1 == x2:
-                raise ZeroDivisionError("La recta es vertical; la pendiente no está definida.")
-            pendiente = (y2 - y1) / (x2 - x1)
-            print(f"Pendiente de la recta = {pendiente:.4f}")
-        except ZeroDivisionError as e:
-            print(e)
+    def calcular_punto_medio(x1, y1, x2, y2):
+        return f"Punto medio = ({(x1 + x2) / 2:.4f}, {(y1 + y2) / 2:.4f})"
 
     @staticmethod
-    def calcular_punto_medio(x1: float, y1: float, x2: float, y2: float):
-        try:
-            mx = (x1 + x2) / 2
-            my = (y1 + y2) / 2
-            print(f"Punto medio = ({mx:.4f}, {my:.4f})")
-        except Exception as e:
-            print(e)
+    def calcular_raices_cuadratica(a, b, c):
+        if a == 0:
+            raise ArithmeticError("El coeficiente 'a' no puede ser cero.")
+        discriminante = b ** 2 - 4 * a * c
+        if discriminante < 0:
+            raise ValueError("El discriminante es negativo; las raices son complejas.")
+        r1 = (-b + math.sqrt(discriminante)) / (2 * a)
+        r2 = (-b - math.sqrt(discriminante)) / (2 * a)
+        return f"Raiz 1 = {r1:.4f}\nRaiz 2 = {r2:.4f}"
 
     @staticmethod
-    def calcular_raices_cuadratica(a: float, b: float, c: float):
+    def convertir_base(numero, base):
+        if numero < 0:
+            raise ValueError("El numero debe ser no negativo.")
+        if base < 2 or base > 36:
+            raise ValueError("La base debe estar entre 2 y 36.")
+        digitos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        if numero == 0:
+            return "Resultado = 0"
+        resultado = ""
+        n = numero
+        while n > 0:
+            resultado = digitos[n % base] + resultado
+            n //= base
+        return f"Resultado en base {base} = {resultado}"
+
+
+def mostrar(caja, texto):
+    caja.config(state="normal")
+    caja.delete("1.0", "end")
+    caja.insert("end", texto)
+    caja.config(state="disabled")
+
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Ejercicio 3 - Calculos Numericos")
+        self.geometry("480x440")
+        self.resizable(False, False)
+        nb = ttk.Notebook(self)
+        nb.pack(fill="both", expand=True, padx=10, pady=10)
+        self.tab_log_sqrt(nb)
+        self.tab_recta(nb)
+        self.tab_cuadratica(nb)
+        self.tab_base(nb)
+
+    def tab_log_sqrt(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Log y Raiz")
+        tk.Label(t, text="Valor:").grid(row=0, column=0, sticky="w", pady=3)
+        self.e_val = tk.Entry(t, width=20)
+        self.e_val.grid(row=0, column=1, pady=3)
+        tk.Button(t, text="Logaritmo neperiano", command=self.run_log).grid(row=1, column=0, columnspan=2, pady=4)
+        tk.Button(t, text="Raiz cuadrada", command=self.run_sqrt).grid(row=2, column=0, columnspan=2, pady=4)
+        self.out_ls = scrolledtext.ScrolledText(t, height=8, width=52, state="disabled")
+        self.out_ls.grid(row=3, column=0, columnspan=2, pady=8)
+
+    def run_log(self):
         try:
-            if a == 0:
-                raise ArithmeticError("El coeficiente 'a' no puede ser cero.")
-            discriminante = b**2 - 4 * a * c
-
-            if discriminante < 0:
-                raise ValueError("El discriminante es negativo; las raíces son complejas.")
-
-            r1 = (-b + math.sqrt(discriminante)) / (2 * a)
-            r2 = (-b - math.sqrt(discriminante)) / (2 * a)
-
-            print(f"Raíz 1 = {r1:.4f}")
-            print(f"Raíz 2 = {r2:.4f}")
-
-        except (ArithmeticError, ValueError) as e:
-            print(e)
-
-    @staticmethod
-    def convertir_base(numero: int, base: int):
-        try:
-            if numero < 0:
-                raise ValueError("El número debe ser no negativo.")
-
-            if base < 2 or base > 36:
-                raise ValueError("La base debe estar entre 2 y 36.")
-
-            digitos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            resultado = ""
-
-            if numero == 0:
-                resultado = "0"
-            else:
-                while numero > 0:
-                    resultado = digitos[numero % base] + resultado
-                    numero //= base
-
-            print(f"Resultado = {resultado}")
-
-        except ValueError as e:
-            print(e)
-
-
-def main():
-    while True:
-        print("\n" + "=" * 30)
-        print("MENÚ DE CÁLCULOS NUMÉRICOS")
-        print("=" * 30)
-        print("1. Logaritmo neperiano")
-        print("2. Raíz cuadrada")
-        print("3. Pendiente de una recta")
-        print("4. Punto medio")
-        print("5. Raíces de ecuación cuadrática")
-        print("6. Conversión de base")
-        print("7. Salir")
-
-        opcion = input("Seleccione una opción: ")
-
-        try:
-            if opcion == "1":
-                valor = float(input("Ingrese un valor: "))
-                CalculosNumericos.calcular_logaritmo_neperiano(valor)
-
-            elif opcion == "2":
-                valor = float(input("Ingrese un valor: "))
-                CalculosNumericos.calcular_raiz_cuadrada(valor)
-
-            elif opcion == "3":
-                print("\nIngrese las coordenadas de los dos puntos")
-
-                x1 = float(input("x1: "))
-                y1 = float(input("y1: "))
-                x2 = float(input("x2: "))
-                y2 = float(input("y2: "))
-
-                CalculosNumericos2.calcular_pendiente(x1, y1, x2, y2)
-
-            elif opcion == "4":
-                print("\nIngrese las coordenadas de los dos puntos")
-
-                x1 = float(input("x1: "))
-                y1 = float(input("y1: "))
-                x2 = float(input("x2: "))
-                y2 = float(input("y2: "))
-
-                CalculosNumericos2.calcular_punto_medio(x1, y1, x2, y2)
-
-            elif opcion == "5":
-                print("\nEcuación cuadrática: ax² + bx + c = 0")
-
-                a = float(input("Ingrese a: "))
-                b = float(input("Ingrese b: "))
-                c = float(input("Ingrese c: "))
-
-                CalculosNumericos2.calcular_raices_cuadratica(a, b, c)
-
-            elif opcion == "6":
-                numero = int(input("Ingrese el número decimal: "))
-
-                print("\nSeleccione la base destino:")
-                print("1. Binario (Base 2)")
-                print("2. Octal (Base 8)")
-                print("3. Decimal (Base 10)")
-                print("4. Hexadecimal (Base 16)")
-
-                opcion_base = input("Opción: ")
-
-                if opcion_base == "1":
-                    base = 2
-                elif opcion_base == "2":
-                    base = 8
-                elif opcion_base == "3":
-                    base = 10
-                elif opcion_base == "4":
-                    base = 16
-                else:
-                    print("Opción de base no válida.")
-                    continue
-
-                CalculosNumericos2.convertir_base(numero, base)
-
-            elif opcion == "7":
-                print("Programa finalizado.")
-                break
-
-            else:
-                print("Opción no válida.")
-
+            mostrar(self.out_ls, CalculosNumericos.calcular_logaritmo_neperiano(float(self.e_val.get())))
+        except ArithmeticError as e:
+            mostrar(self.out_ls, f"Error: {e}")
         except ValueError:
-            print("Debe ingresar valores numéricos válidos.")
+            mostrar(self.out_ls, "El valor debe ser numerico para calcular el logaritmo.")
+
+    def run_sqrt(self):
+        try:
+            mostrar(self.out_ls, CalculosNumericos.calcular_raiz_cuadrada(float(self.e_val.get())))
+        except ArithmeticError as e:
+            mostrar(self.out_ls, f"Error: {e}")
+        except ValueError:
+            mostrar(self.out_ls, "El valor debe ser numerico para calcular la raiz cuadrada.")
+
+    def tab_recta(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Recta")
+        campos = [("x1:", "rx1"), ("y1:", "ry1"), ("x2:", "rx2"), ("y2:", "ry2")]
+        self.entradas_recta = {}
+        for i, (lbl, key) in enumerate(campos):
+            tk.Label(t, text=lbl).grid(row=i, column=0, sticky="w", pady=3)
+            e = tk.Entry(t, width=14)
+            e.grid(row=i, column=1, pady=3, sticky="w")
+            self.entradas_recta[key] = e
+        tk.Button(t, text="Calcular pendiente", command=self.run_pendiente).grid(row=4, column=0, columnspan=2, pady=4)
+        tk.Button(t, text="Calcular punto medio", command=self.run_medio).grid(row=5, column=0, columnspan=2, pady=4)
+        self.out_r = scrolledtext.ScrolledText(t, height=6, width=52, state="disabled")
+        self.out_r.grid(row=6, column=0, columnspan=2, pady=8)
+
+    def get_puntos(self):
+        e = self.entradas_recta
+        return float(e["rx1"].get()), float(e["ry1"].get()), float(e["rx2"].get()), float(e["ry2"].get())
+
+    def run_pendiente(self):
+        try:
+            mostrar(self.out_r, CalculosNumericos2.calcular_pendiente(*self.get_puntos()))
+        except ZeroDivisionError as e:
+            mostrar(self.out_r, f"Error: {e}")
+        except ValueError:
+            mostrar(self.out_r, "Ingrese coordenadas numericas.")
+
+    def run_medio(self):
+        try:
+            mostrar(self.out_r, CalculosNumericos2.calcular_punto_medio(*self.get_puntos()))
+        except ValueError:
+            mostrar(self.out_r, "Ingrese coordenadas numericas.")
+
+    def tab_cuadratica(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Cuadratica")
+        tk.Label(t, text="ax2 + bx + c = 0").grid(row=0, column=0, columnspan=2, pady=(0, 8))
+        for i, lbl in enumerate(["a:", "b:", "c:"]):
+            tk.Label(t, text=lbl).grid(row=i + 1, column=0, sticky="w", pady=3)
+        self.qa = tk.Entry(t, width=14)
+        self.qb = tk.Entry(t, width=14)
+        self.qc = tk.Entry(t, width=14)
+        self.qa.grid(row=1, column=1, pady=3, sticky="w")
+        self.qb.grid(row=2, column=1, pady=3, sticky="w")
+        self.qc.grid(row=3, column=1, pady=3, sticky="w")
+        tk.Button(t, text="Calcular raices", command=self.run_cuadratica).grid(row=4, column=0, columnspan=2, pady=8)
+        self.out_q = scrolledtext.ScrolledText(t, height=6, width=52, state="disabled")
+        self.out_q.grid(row=5, column=0, columnspan=2)
+
+    def run_cuadratica(self):
+        try:
+            mostrar(self.out_q, CalculosNumericos2.calcular_raices_cuadratica(
+                float(self.qa.get()), float(self.qb.get()), float(self.qc.get())))
+        except (ArithmeticError, ValueError) as e:
+            mostrar(self.out_q, f"Error: {e}")
+
+    def tab_base(self, nb):
+        t = tk.Frame(nb, padx=10, pady=10)
+        nb.add(t, text="Conversion de Base")
+        tk.Label(t, text="Numero decimal:").grid(row=0, column=0, sticky="w", pady=3)
+        self.b_num = tk.Entry(t, width=16)
+        self.b_num.grid(row=0, column=1, pady=3, sticky="w")
+        tk.Label(t, text="Base destino:").grid(row=1, column=0, sticky="w", pady=3)
+        self.b_base = tk.StringVar(value="2")
+        frame_r = tk.Frame(t)
+        frame_r.grid(row=1, column=1, sticky="w")
+        for txt, val in [("Binario (2)", "2"), ("Octal (8)", "8"), ("Decimal (10)", "10"), ("Hexadecimal (16)", "16")]:
+            tk.Radiobutton(frame_r, text=txt, variable=self.b_base, value=val).pack(anchor="w")
+        tk.Button(t, text="Convertir", command=self.run_base).grid(row=2, column=0, columnspan=2, pady=8)
+        self.out_b = scrolledtext.ScrolledText(t, height=5, width=52, state="disabled")
+        self.out_b.grid(row=3, column=0, columnspan=2)
+
+    def run_base(self):
+        try:
+            mostrar(self.out_b, CalculosNumericos2.convertir_base(int(self.b_num.get()), int(self.b_base.get())))
+        except ValueError as e:
+            mostrar(self.out_b, f"Error: {e}")
 
 
 if __name__ == "__main__":
-    main()
+    App().mainloop()
